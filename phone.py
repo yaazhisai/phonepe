@@ -9,13 +9,11 @@ from streamlit_option_menu import option_menu
 import locale
 from babel import numbers
 import plotly.express as pt
-# from PIL import Image
-import base64
 
 def agg_state_list():
     #This is to direct the path to get the data as states
 
-    path="C:/Users/yaazhisai/Desktop/project2/pulse/data/aggregated/transaction/country/india/state/"
+    path="C:/Users/yaazhisai/Desktop/testing/pulse/data/aggregated/transaction/country/india/state/"
     Agg_state_list=os.listdir(path)
     #Agg_state_list--> to get the list of states in India
 
@@ -58,7 +56,7 @@ def agg_state_list():
     
 def agg_state_user():
 
-    path="C:/Users/yaazhisai/Desktop/project2/pulse/data/aggregated/user/country/india/state/"
+    path="C:/Users/yaazhisai/Desktop/testing/pulse/data/aggregated/user/country/india/state/"
     Agg_state_user=os.listdir(path)
     #Agg_state_list--> to get the list of states in India
 
@@ -81,9 +79,7 @@ def agg_state_user():
                 for k,v in dict.items(response1['data']):
                     if k == 'aggregated':
                         reg_user=v['registeredUsers']
-                        #print(reg_user)
                         app_open=v['appOpens']
-                        #print(app_open)
                         brand=""
                         count=""
                         final1['States'].append(i)
@@ -120,7 +116,7 @@ def agg_state_user():
     return final_agg_user
 
 def map_state_list():
-    path="C:/Users/yaazhisai/Desktop/project2/pulse/data/map/transaction/hover/country/india/state/"
+    path="C:/Users/yaazhisai/Desktop/testing/pulse/data/map/transaction/hover/country/india/state/"
     Map_state_list=os.listdir(path)
 
     Map_state_list
@@ -142,7 +138,6 @@ def map_state_list():
                     district=z['name']
                     trans_count=z['metric'][0]['count']
                     trans_amount=z['metric'][0]['amount']
-                    #print(district,trans_count,trans_amount)
                     final2['States'].append(i)
                     final2['Year'].append(j)
                     final2['Quarter'].append(k.strip(".json"))
@@ -163,7 +158,7 @@ def map_state_list():
     return final_map_trans
 
 def map_state_user():
-    path="C:/Users/yaazhisai/Desktop/project2/pulse/data/map/user/hover/country/india/state/"
+    path="C:/Users/yaazhisai/Desktop/testing/pulse/data/map/user/hover/country/india/state/"
     Map_state_user=os.listdir(path)
 
     Map_state_user
@@ -182,7 +177,6 @@ def map_state_user():
                 response3=json.load(r)
                 response3
                 for key,val in dict.items(response3['data']['hoverData']):
-                    #print(key,val)
                     district=key
                     reg_user=val["registeredUsers"]
                     tapp_open=val["appOpens"]
@@ -206,7 +200,7 @@ def map_state_user():
     return final_map_user
 
 def top_trans_state():
-    path="C:/Users/yaazhisai/Desktop/project2/pulse/data/top/transaction/country/india/"
+    path="C:/Users/yaazhisai/Desktop/testing/pulse/data/top/transaction/country/india/"
     top_year_list=os.listdir(path)
 
     top_year_list.remove('state')
@@ -248,7 +242,7 @@ def top_district_list():
     final5_districts={'States':[],'districts':[], 'Year':[],'Quarter':[], 'Trans_count':[], 'Total_amount':[]}
     final6_pincodes={'States':[],'pincodes':[], 'Year':[],'Quarter':[], 'Trans_count':[], 'Total_amount':[]}
 
-    path="C:/Users/yaazhisai/Desktop/project2/pulse/data/top/transaction/country/india/state/"
+    path="C:/Users/yaazhisai/Desktop/testing/pulse/data/top/transaction/country/india/state/"
     top_state_list=os.listdir(path)
 
     for i in top_state_list:
@@ -308,7 +302,7 @@ def top_district_list():
     return final_top_transac_districts, final_top_transac_pincodes
 
 def top_user_list():
-    path="C:/Users/yaazhisai/Desktop/project2/pulse/data/top/user/country/india/"
+    path="C:/Users/yaazhisai/Desktop/testing/pulse/data/top/user/country/india/"
     top_year_user=os.listdir(path)
 
     top_year_user.remove('state')
@@ -348,7 +342,7 @@ def top_user_district():
     final8_districts_user={'States':[],'Districts':[], 'Year':[],'Quarter':[], 'Reguser_count':[]}
     final9_pincodes_user={'States':[],'Pincode':[], 'Year':[],'Quarter':[], 'Reguser_count':[]}
 
-    path="C:/Users/yaazhisai/Desktop/project2/pulse/data/top/user/country/india/state/"
+    path="C:/Users/yaazhisai/Desktop/testing/pulse/data/top/user/country/india/state/"
     top_state_list=os.listdir(path)
     for i in top_state_list:
         path_i=path+i+'/'
@@ -539,14 +533,26 @@ def trans(c1,r1,y,q,c4):
         out1.reset_index(drop=True,inplace=True)
         out2=out.sort_values("trans_count",ascending=False).head(10)
         out2.reset_index(drop=True,inplace=True)
-        col1,col2=st.columns(2)
-        with col1:
-            bar1_amt=pt.bar(out1,x='state',y='trans_amount',title=f"{r1} {y} Q{q} TRANS_AMOUNT",height=450,width=300)
-            st.plotly_chart(bar1_amt)
-        with col2:
-            bar1_count=pt.bar(out2,x='state',y='trans_count',title=f"{r1} {y} Q{q} TRANS_COUNT",height=450,width=300)
-            st.plotly_chart(bar1_count)
+        tab1, tab2= st.tabs(["TOP10 Trans_amount", "TOP10 Trans_count"])
         
+        with tab1:
+            col1,col2=st.columns(2)
+            with col1:
+                bar1_amt=pt.bar(out1,x='state',y='trans_amount',title=f"{r1} {y} Q{q} TRANS_AMOUNT",height=450,width=300)
+                st.plotly_chart(bar1_amt)
+            with col2:
+                fig = pt.sunburst(out,path=['state','trans_amount'], values='trans_amount',hover_data='trans_amount',color='state')
+                st.plotly_chart(fig)
+
+        with tab2:
+            col1,col2=st.columns(2)
+            with col1:
+                bar1_count=pt.bar(out2,x='state',y='trans_count',title=f"{r1} {y} Q{q} TRANS_COUNT",height=450,width=300)
+                st.plotly_chart(bar1_count)
+            with col2:
+                fig = pt.sunburst(out,path=['state','trans_count'], values='trans_count', color='state')
+                st.plotly_chart(fig)
+
         if c4:
             get_trans_map(out)
     
@@ -572,20 +578,27 @@ def trans(c1,r1,y,q,c4):
         out.reset_index(inplace=True)
         out1=out.sort_values("num_rusers",ascending=False).head(10)
         out1.reset_index(drop=True,inplace=True)
-
         out2=filbyquar.groupby('brand')[['reg_brand']].sum()
         out2.reset_index(inplace=True)
-        # print(out2)
         out3=out2.sort_values("reg_brand",ascending=False).head(10)
         out3.reset_index(drop=True,inplace=True)
-        # print(out3)
-        col1,col2=st.columns(2)
-        with col1:
-            pie_agg=pt.pie(out1,values='num_rusers',title=f"{c1} {r1} {y} Q{q} USERCOUNT", names='state',height=450,width=350)
-            st.plotly_chart(pie_agg)
-        with col2:
-            pie_agg=pt.pie(out3,values='reg_brand',title=f"{c1} {r1} {y} Q{q} REGBRAND",names='brand',height=450,width=350)
-            st.plotly_chart(pie_agg)
+        tab1,tab2=st.tabs(['USERCOUNT','REG_BRAND'])
+        with tab1:
+            col1,col2=st.columns(2)
+            with col1:
+                pie_agg=pt.pie(out1,values='num_rusers',title=f"{c1} {r1} {y} Q{q} USERCOUNT", names='state',height=450,width=350)
+                st.plotly_chart(pie_agg)
+            with col2:
+                fig=pt.scatter(out,x='state',y='num_rusers',size='num_rusers',color='state')
+                st.plotly_chart(fig)
+        with tab2:
+            col1,col2=st.columns(2)
+            with col1:
+                pie_agg=pt.pie(out3,values='reg_brand',title=f"{c1} {r1} {y} Q{q} REGBRAND",names='brand',height=450,width=350)
+                st.plotly_chart(pie_agg)
+            with col2:
+                fig1=pt.scatter(out3,x='brand',y='reg_brand',size='reg_brand',color='brand')
+                st.plotly_chart(fig1)
         if c4:
             get_user_map(out)
 
@@ -596,13 +609,23 @@ def trans(c1,r1,y,q,c4):
         out.reset_index(inplace=True)
         out1=out.sort_values("num_rusers",ascending=False).head(10)
         out1.reset_index(drop=True,inplace=True)
-        col1,col2=st.columns(2)
-        with col1:
-            pie_agg=pt.pie(out1,values='num_rusers',title=f"{c1} {r1} {y} QUARTER{q} USERCOUNT",names='state',height=450,width=350)
-            st.plotly_chart(pie_agg)
-        with col2:
-            pie_agg=pt.pie(out1,values='app_open',title=f"{c1} {r1} {y} QUARTER{q} APPOPEN",names='state',height=450,width=350)
-            st.plotly_chart(pie_agg)
+        tab1, tab2 = st.tabs(["USERCOUNT", "APP_OPEN"])
+        with tab1:
+            col1,col2=st.columns(2)
+            with col1:
+                pie_agg=pt.pie(out1,values='num_rusers',title=f"{c1} {r1} {y} QUARTER{q} USERCOUNT",names='state',height=450,width=350)
+                st.plotly_chart(pie_agg)
+            with col2:
+                fig=pt.scatter(out,x='state',y='num_rusers',size='num_rusers',color='state')
+                st.plotly_chart(fig)
+        with tab2:
+            col1,col2=st.columns(2)
+            with col1:
+                pie_agg=pt.pie(out1,values='app_open',title=f"{c1} {r1} {y} QUARTER{q} APPOPEN",names='state',height=450,width=350)
+                st.plotly_chart(pie_agg)
+            with col2:
+                fig=pt.scatter(out,x='state',y='app_open',size='app_open',color='state')
+                st.plotly_chart(fig)
         if c4:
             get_user_map(out)
     elif c1=='USER' and r1=='TOP_STATE':
@@ -610,8 +633,13 @@ def trans(c1,r1,y,q,c4):
         out.reset_index(inplace=True)
         out1=out.sort_values("num_rusers",ascending=False).head(10)
         out1.reset_index(drop=True,inplace=True)
-        pie_agg=pt.pie(out1,values='num_rusers',title=f"{c1} {r1} {y} Q{q} USERCOUNT",names='states',height=450,width=300)
-        st.plotly_chart(pie_agg)
+        col1,col2=st.columns(2)
+        with col1:
+            pie_agg=pt.pie(out1,values='num_rusers',title=f"{c1} {r1} {y} Q{q} USERCOUNT",names='states',height=450,width=300)
+            st.plotly_chart(pie_agg)
+        with col2:
+            fig = pt.sunburst(out,path=['states','num_rusers'], values='num_rusers', color='states',title='REGISTERED USERCOUNT')
+            st.plotly_chart(fig)
         if c4:
             get_user_map(out)
     elif c1=='USER' and r1=='TOP_DISTRICT':
@@ -621,8 +649,13 @@ def trans(c1,r1,y,q,c4):
         out1.reset_index(drop=True,inplace=True)
         pie_agg=pt.pie(out1,values='num_rusers',title=f"{c1} {r1} {y} QUARTER{q} USERCOUNT",names='districts',height=450,width=300)
         st.plotly_chart(pie_agg)
+        fig = pt.scatter(out1, x="districts", y="num_rusers", title="USERCOUNT")
+        st.plotly_chart(fig)
+        
+        
         if c4:
             get_user_map(out)
+
     elif c1=='USER' and r1=='TOP_PINCODES':
         out=filbyquar.groupby('pincodes')['num_rusers'].sum()
         out.reset_index(inplace=True)
@@ -632,9 +665,7 @@ def trans(c1,r1,y,q,c4):
         with col1:
             pie_agg=pt.pie(out1,values='num_rusers',title=f"{c1} {r1} {y} QUARTER{q} USERCOUNT",names='states',height=450,width=300)
             st.plotly_chart(pie_agg)
-        # with col2:
-        #     pie_agg=pt.pie(out2,values='reg_brand',names='brand')
-        #     st.plotly_chart(pie_agg)
+        
         if c4:
             get_user_map(out)
 
@@ -675,29 +706,38 @@ def top_dist(c1,r1,y,q,c4,s1):
         
         out1=out.sort_values("trans_amount",ascending=False).head(10)
         out1.reset_index(drop=True,inplace=True)
-        col1,col2=st.columns(2)
-        with col1:
-            bar1_amt=pt.bar(out1,x='districts',y='trans_amount',title=f"10{r1} {y} Q{q} TRANS_AMOUNT",height=450,width=300)
-            st.plotly_chart(bar1_amt)
-        with col2:
-            bar1_count=pt.bar(out1,x='districts',y='trans_count',title=f"10{r1} {y} Q{q} TRANS_COUNT",height=450,width=300)
-            st.plotly_chart(bar1_count)
+        tab1,tab2=st.tabs(['TOP10 Trans_amount_count','ALL DISTRICTS'])
+        with tab1:
+            col1,col2=st.columns(2)
+            with col1:
+                bar1_amt=pt.bar(out1,x='districts',y='trans_amount',title=f"10{r1} {y} Q{q} TRANS_AMOUNT",height=450,width=300)
+                st.plotly_chart(bar1_amt)
+            with col2:
+                bar1_count=pt.bar(out1,x='districts',y='trans_count',title=f"10{r1} {y} Q{q} TRANS_COUNT",height=450,width=300)
+                st.plotly_chart(bar1_count)
+        with tab2:
+            fig = pt.sunburst(out,path=['districts','trans_amount','trans_count'], values='trans_amount',hover_data='trans_count',color='trans_amount')
+            st.plotly_chart(fig)
 
     if c1=="TRANSACTION" and r1=='TOP_PINCODE':
         out=filbyquar.groupby('pincodes')[['trans_amount','trans_count']].sum() 
         out.reset_index(inplace=True)
         out1=out.sort_values("trans_amount",ascending=False).head(10)
         out1.reset_index(drop=True,inplace=True)
-        col1,col2=st.columns(2)
-        with col1:
-            #bar1_amt=pt.bar(out1,x='pincodes',y='trans_amount',title=f"{c1} {r1} {y} Q{q}  TRANS_AMOUNT",height=450,width=300)
-            #st.plotly_chart(bar1_amt)
-            pie_agg=pt.pie(out1,values='trans_amount',title=f"{r1} {y} Q{q} TRANS_AMOUNT", names='pincodes',height=450,width=300)
-            st.plotly_chart(pie_agg)
-        with col2:
-            pie_agg=pt.pie(out1,values='trans_count',title=f"{r1} {y} Q{q} TRANS_COUNT", names='pincodes',height=450,width=300)
-            st.plotly_chart(pie_agg)
+        tab1,tab2=st.tabs(['Top10 Trans_Pincode','ALL PINCODES'])
         
+        with tab1:
+            col1,col2=st.columns(2)
+            with col1:
+                pie_agg=pt.pie(out1,values='trans_amount',title=f"{r1} {y} Q{q} TRANS_AMOUNT", names='pincodes',height=450,width=300)
+                st.plotly_chart(pie_agg)
+            with col2:
+                pie_agg=pt.pie(out1,values='trans_count',title=f"{r1} {y} Q{q} TRANS_COUNT", names='pincodes',height=450,width=300)
+                st.plotly_chart(pie_agg)
+        with tab2:
+            fig = pt.sunburst(out,path=['pincodes','trans_amount','trans_count'], values='trans_amount',hover_data='trans_count',color='pincodes')
+            st.plotly_chart(fig)
+            
     if c1=="USER" and r1=='TOP_DISTRICT':
         out=filbyquar.groupby('districts')[['num_rusers']].sum() 
         out.reset_index(inplace=True)        
@@ -757,7 +797,7 @@ def get_trans_map(df):
     
     map=folium.Map(location=(20.5937,78.9629),zoom_start=4, scrollWheelZoom=False,titles='cartoDB positron')
     choropleth=folium.Choropleth(
-        geo_data="C:/Users/yaazhisai/Desktop/project2/india_state_geo.json",
+        geo_data="C:/Users/yaazhisai/Desktop/testing/india_state_geo.json",
         data=df,
         columns=('state','trans_amount'),
         key_on="feature.properties.NAME_1",
@@ -789,7 +829,7 @@ def get_user_map(df):
     
     map=folium.Map(location=(20.5937,78.9629),zoom_start=4, scrollWheelZoom=False,titles='cartoDB positron')
     choropleth=folium.Choropleth(
-        geo_data="C:/Users/yaazhisai/Desktop/project2/india_state_geo.json",
+        geo_data="C:/Users/yaazhisai/Desktop/testing/india_state_geo.json",
         data=df,
         columns=('state','num_rusers'),
         key_on="feature.properties.NAME_1",
@@ -845,7 +885,7 @@ if c1!=" ":
             trans(c1,r1,int(c2),int(c3),c4)
 
     elif r1=='TOP_PINCODE' or r1=='TOP_DISTRICT':
-        s1=st.sidebar.selectbox('CHOOSE THE STATE:',(" ","Andaman and Nicobar","Andhra Pradesh","Arunachal Pradesh","Assam","Bihar","Chandigarh","Chhattisgarh","Dadra and Nagar Haveli","Delhi","Goa","Gujarat","Haryana","Himachal Pradesh","Jammu and Kashmir","Jharkhand","Karnataka","Kerala","Lakshadweep","Madhya Pradesh","Maharashtra","Manipur","Meghalaya","Mizoram","Nagaland","Orissa","Puducherry","Punjab","Rajasthan","Sikkim","Tamil Nadu","Tripura","Uttar Pradesh","Uttaranchal","West Bengal"))
+        s1=st.sidebar.selectbox('CHOOSE THE STATE:',(" ","Andaman and Nicobar","Andhra Pradesh","Arunachal Pradesh","Assam","Bihar","Chandigarh","Chhattisgarh","Dadra and Nagar Haveli","Delhi","Goa","Gujarat","Haryana","Himachal Pradesh","Jammu and Kashmir","Jharkhand","Karnataka","Kerala","Lakshadweep","Madhya Pradesh","Maharashtra","Manipur","Meghalaya","Mizoram","Nagaland","Orissa","Puducherry","Punjab","Rajasthan","Sikkim","Tamil Nadu","Tripura","Telangana","Uttar Pradesh","Uttaranchal","West Bengal"))
         c2=st.sidebar.selectbox("YEAR",(" ",2018,2019,2020,2021,2022,2023))
         c3=st.sidebar.selectbox("QUARTER",(" ","Q1","Q2","Q3","Q4"))
         if s1!=" " and c2!=" " and c3!=" ":
